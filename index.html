@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venta de artículos – Seba & Noam</title>
+  <style>
+    /* ── CONFIG ── cambiá esto a gusto */
+    :root {
+      --accent: #25D366;       /* verde WhatsApp */
+      --accent-dark: #1da851;
+      --sold-bg: rgba(0,0,0,0.62);
+      --card-radius: 12px;
+      --font: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 20px 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    header p.subtitle {
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    /* ── CATEGORY TABS ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: #555;
+      transition: all 0.15s;
+    }
+    .tab:hover { border-color: var(--accent); color: var(--accent); }
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 12px 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    /* foto */
+    .card-img-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 75%; /* ratio 4:3 */
+      background: #eee;
+      overflow: hidden;
+    }
+    .card-img-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-img-wrap .no-img {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: #bbb;
+    }
+
+    /* badge vendido */
+    .sold-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--sold-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sold-badge {
+      background: #e53935;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 6px;
+      transform: rotate(-8deg);
+    }
+
+    /* category chip on card */
+    .card-category {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* body */
+    .card-body {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-id {
+      font-size: 0.7rem;
+      color: #aaa;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .card-price-row {
+      margin-top: auto;
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-price {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #111;
+    }
+
+    .card-senia {
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    .card-fecha {
+      font-size: 0.75rem;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* WhatsApp button */
+    .wa-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 9px 0;
+      margin: 8px 12px 12px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .wa-btn:hover { background: var(--accent-dark); }
+    .wa-btn svg { flex-shrink: 0; }
+    .wa-btn.disabled {
+      background: #ccc;
+      pointer-events: none;
+    }
+
+    /* estados de carga */
+    #status {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+      font-size: 0.95rem;
+    }
+
+    /* contador */
+    .count-label {
+      font-size: 0.82rem;
+      color: #999;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .card-name { font-size: 0.9rem; }
+      .card-price { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Venta de artículos 📦</h1>
+    <p class="subtitle">Nos mudamos — todo tiene que irse</p>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<main>
+  <div id="status">Cargando productos...</div>
+  <div class="count-label" id="count-label" style="display:none"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<script>
+  // ════════════════════════════════════════════
+  //  ⚙️  CONFIGURACIÓN — editá estos valores
+  // ════════════════════════════════════════════
+  const CONFIG = {
+    // Tu número de WhatsApp con código de país, sin espacios ni + ni -
+    // Israel: 972 + número sin el 0 inicial. Ejemplo: 972501234567
+    whatsappNumber: '972501234567',
+
+    // URL del Google Sheet publicado como CSV
+    // Instrucciones: Archivo → Publicar en la web → Hoja1 → CSV → Copiar link
+    sheetCsvUrl: 'PEGAR_URL_DEL_SHEET_AQUI',
+
+    // Título de la página
+    titulo: 'Venta de artículos – Seba & Noam',
+
+    // Moneda por defecto (si el Sheet no tiene columna Moneda)
+    monedaDefault: '₪',
+  };
+  // ════════════════════════════════════════════
+
+  const WA_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.85L.057 23.428a.5.5 0 0 0 .609.61l5.638-1.47A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 0 1-5.031-1.369l-.36-.214-3.742.976.999-3.648-.235-.374A9.861 9.861 0 0 1 2.1 12C2.1 6.534 6.534 2.1 12 2.1c5.466 0 9.9 4.434 9.9 9.9 0 5.466-4.434 9.9-9.9 9.9z"/></svg>`;
+
+  document.title = CONFIG.titulo;
+
+  // ── Parse CSV simple (maneja comillas) ──
+  function parseCsv(text) {
+    const rows = [];
+    const lines = text.split(/\r?\n/);
+    lines.forEach(line => {
+      if (!line.trim()) return;
+      const cols = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else cur += c;
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    });
+    return rows;
+  }
+
+  function csvToObjects(rows) {
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.toLowerCase().replace(/\s+/g, '_'));
+    return rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+      return obj;
+    });
+  }
+
+  // ── Render ──
+  let allProducts = [];
+  let activeCategory = 'Todos';
+
+  function getCategories(products) {
+    const cats = [...new Set(products.map(p => normalizeStr(p.categoria || p.category || '')).filter(Boolean))];
+    cats.sort();
+    return ['Todos', ...cats];
+  }
+
+  function normalizeStr(s) {
+    return s.trim().charAt(0).toUpperCase() + s.trim().slice(1).toLowerCase();
+  }
+
+  function renderTabs(categories) {
+    const el = document.getElementById('tabs');
+    el.innerHTML = categories.map(c =>
+      `<button class="tab${c === activeCategory ? ' active' : ''}" onclick="filterBy('${c}')">${c}</button>`
+    ).join('');
+  }
+
+  function filterBy(cat) {
+    activeCategory = cat;
+    renderAll();
+  }
+
+  function renderAll() {
+    const cats = getCategories(allProducts);
+    renderTabs(cats);
+
+    const filtered = activeCategory === 'Todos'
+      ? allProducts
+      : allProducts.filter(p => normalizeStr(p.categoria || p.category || '') === activeCategory);
+
+    const countEl = document.getElementById('count-label');
+    const avail = filtered.filter(p => !isSold(p)).length;
+    countEl.textContent = `${avail} disponible${avail !== 1 ? 's' : ''} de ${filtered.length}`;
+    countEl.style.display = 'block';
+
+    document.getElementById('grid').innerHTML = filtered.map(cardHtml).join('');
+  }
+
+  function isSold(p) {
+    const v = (p.vendido || p.sold || '').toLowerCase().trim();
+    return v === 'true' || v === 'sí' || v === 'si' || v === '1' || v === 'vendido';
+  }
+
+  function fmtPrice(p) {
+    const moneda = p.moneda || p.currency || CONFIG.monedaDefault;
+    const precio = p.precio || p.price || '';
+    if (!precio) return '';
+    return `${moneda}${Number(precio).toLocaleString('es-AR')}`;
+  }
+
+  function waLink(p) {
+    const id = p.id || p.producto_id || '?';
+    const nombre = p.nombre || p.name || '';
+    const msg = encodeURIComponent(`Hola! Quiero reservar: *${nombre}* (ID: ${id})`);
+    return `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
+  }
+
+  function cardHtml(p) {
+    const sold = isSold(p);
+    const nombre = p.nombre || p.name || 'Sin nombre';
+    const desc = p.descripcion || p.description || '';
+    const id = p.id || '';
+    const precio = fmtPrice(p);
+    const senia = p.senia || p.seña || p.deposito || '';
+    const fecha = p.fecha_retiro || p.fecha || '';
+    const foto = p.foto || p.foto_url || p.imagen || p.image || '';
+    const cat = normalizeStr(p.categoria || p.category || '');
+
+    const fotoHtml = foto
+      ? `<img src="${foto}" alt="${nombre}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-img>📦</div>'">`
+      : `<div class="no-img">📦</div>`;
+
+    const soldOverlay = sold
+      ? `<div class="sold-overlay"><span class="sold-badge">Vendido</span></div>`
+      : '';
+
+    const precioHtml = precio
+      ? `<div class="card-price">${precio}</div>`
+      : '';
+
+    const seniaHtml = senia
+      ? `<div class="card-senia">Seña: ${CONFIG.monedaDefault}${Number(senia).toLocaleString('es-AR')}</div>`
+      : '';
+
+    const fechaHtml = fecha
+      ? `<div class="card-fecha">📅 Retiro: ${fecha}</div>`
+      : '';
+
+    const btnHtml = sold
+      ? `<a class="wa-btn disabled" href="#">${WA_ICON} Ya vendido</a>`
+      : `<a class="wa-btn" href="${waLink(p)}" target="_blank">${WA_ICON} Reservar</a>`;
+
+    return `
+    <div class="card">
+      <div class="card-img-wrap">
+        ${fotoHtml}
+        ${soldOverlay}
+        ${cat ? `<span class="card-category">${cat}</span>` : ''}
+      </div>
+      <div class="card-body">
+        ${id ? `<div class="card-id">#${id}</div>` : ''}
+        <div class="card-name">${nombre}</div>
+        ${desc ? `<div class="card-desc">${desc}</div>` : ''}
+        <div class="card-price-row">
+          ${precioHtml}
+          ${seniaHtml}
+          ${fechaHtml}
+        </div>
+      </div>
+      ${btnHtml}
+    </div>`;
+  }
+
+  // ── Fetch ──
+  async function loadProducts() {
+    const statusEl = document.getElementById('status');
+
+    if (CONFIG.sheetCsvUrl === 'PEGAR_URL_DEL_SHEET_AQUI') {
+      // Modo demo con datos de ejemplo
+      allProducts = DEMO_DATA;
+      statusEl.style.display = 'none';
+      renderAll();
+      return;
+    }
+
+    try {
+      const resp = await fetch(CONFIG.sheetCsvUrl);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const text = await resp.text();
+      const rows = parseCsv(text);
+      allProducts = csvToObjects(rows).filter(p => p.nombre || p.name);
+      if (allProducts.length === 0) throw new Error('Sin productos');
+      statusEl.style.display = 'none';
+      renderAll();
+    } catch (e) {
+      statusEl.innerHTML = `
+        <div style="color:#c00;font-size:0.9rem">
+          Error al cargar productos. ¿Está la URL del Sheet correcta y publicada?<br>
+          <small style="color:#aaa">${e.message}</small>
+        </div>`;
+    }
+  }
+
+  // ── Datos de demo (se usan mientras no hay Sheet configurado) ──
+  const DEMO_DATA = [
+    { id:'MUE-01', nombre:'Mesa de comedor 6 sillas', descripcion:'Madera maciza, muy buen estado', categoria:'Muebles', precio:'2800', moneda:'₪', senia:'500', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
+    { id:'MUE-02', nombre:'Sillón 3 cuerpos', descripcion:'Gris claro, 2 años de uso', categoria:'Muebles', precio:'1500', moneda:'₪', senia:'300', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
+    { id:'MUE-03', nombre:'Cama 2 plazas + colchón', descripcion:'Sommier incluido', categoria:'Muebles', precio:'3200', moneda:'₪', senia:'600', fecha_retiro:'Oct 2026', foto:'', vendido:'true' },
+    { id:'NIN-01', nombre:'Cuna convertible', descripcion:'Hasta 4 años, incluye colchón', categoria:'Niños', precio:'900', moneda:'₪', senia:'0', fecha_retiro:'Sep 2026', foto:'', vendido:'false' },
+    { id:'NIN-02', nombre:'Silla de comer', descripcion:'Ajustable, plegable', categoria:'Niños', precio:'350', moneda:'₪', senia:'0', fecha_retiro:'Sep 2026', foto:'', vendido:'false' },
+    { id:'COC-01', nombre:'Cafetera Nespresso', descripcion:'Con 40 cápsulas', categoria:'Cocina', precio:'400', moneda:'₪', senia:'0', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
+    { id:'COC-02', nombre:'Batidora KitchenAid', descripcion:'Roja, accesorios completos', categoria:'Cocina', precio:'1200', moneda:'₪', senia:'200', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
+  ];
+
+  loadProducts();
+</script>
+
+</body>
+</html>
