@@ -1,505 +1,435 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Venta de artículos – Seba & Noam</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>המכירה של סבי ואופיר</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.29.0/dist/tabler-icons.min.css">
   <style>
-    /* ── CONFIG ── cambiá esto a gusto */
-    :root {
-      --accent: #25D366;       /* verde WhatsApp */
-      --accent-dark: #1da851;
-      --sold-bg: rgba(0,0,0,0.62);
-      --card-radius: 12px;
-      --font: 'Segoe UI', system-ui, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: var(--font);
-      background: #f5f5f5;
-      color: #222;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      direction: rtl;
       min-height: 100vh;
     }
 
-    /* ── HEADER ── */
-    header {
-      background: #fff;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 20px 16px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
+    .page { max-width: 960px; margin: 0 auto; padding: 0 1rem 3rem; }
 
-    .header-top {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 14px;
+    header { text-align: center; padding: 1.5rem 0 1rem; position: relative; }
+    header h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+    header p  { font-size: 13px; color: #888; }
+    #lang-btn {
+      position: absolute; top: 1.5rem; left: 0;
+      background: transparent; border: 0.5px solid #d8d8d8;
+      border-radius: 20px; padding: 5px 13px;
+      font-size: 12px; color: #888; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
     }
+    #lang-btn:hover { border-color: #999; color: #333; }
 
-    header h1 {
-      font-size: 1.3rem;
-      font-weight: 700;
-    }
+    #stats { font-size: 12px; color: #999; margin-bottom: 10px; }
 
-    header p.subtitle {
-      font-size: 0.85rem;
-      color: #777;
-    }
+    #filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
 
-    /* ── CATEGORY TABS ── */
-    .tabs {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 12px;
-      scrollbar-width: none;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-
-    .tab {
-      flex-shrink: 0;
-      padding: 6px 16px;
-      border-radius: 20px;
-      border: 1.5px solid #ddd;
+    .pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 0.5px solid #d8d8d8;
       background: transparent;
-      font-size: 0.85rem;
-      font-weight: 500;
+      color: #777;
+      font-size: 13px;
       cursor: pointer;
-      color: #555;
-      transition: all 0.15s;
+      font-family: inherit;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
     }
-    .tab:hover { border-color: var(--accent); color: var(--accent); }
-    .tab.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
+    .pill:hover  { border-color: #aaa; }
+    .pill.active { border-color: #999; background: #e8e8e5; color: #111; font-weight: 500; }
 
-    /* ── MAIN ── */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px 12px 40px;
-    }
-
-    .grid {
+    #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    @media (min-width: 680px) {
+      #grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
     }
 
-    /* ── CARD ── */
+    /* ── Card ── */
     .card {
       background: #fff;
-      border-radius: var(--card-radius);
+      border: 0.5px solid #e2e2e0;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: border-color 0.15s;
     }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    }
+    .card:hover { border-color: #ccc; }
+    .card.sold  { opacity: 0.62; }
 
-    /* foto */
-    .card-img-wrap {
-      position: relative;
-      width: 100%;
-      padding-top: 75%; /* ratio 4:3 */
-      background: #eee;
+    .card-photo { position: relative; flex-shrink: 0; }
+    .card-photo-inner {
+      height: 200px;
       overflow: hidden;
-    }
-    .card-img-wrap img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .card-img-wrap .no-img {
-      position: absolute;
-      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      color: #bbb;
     }
+    .card-photo-inner img { width: 100%; height: 100%; object-fit: cover; }
+    .card-photo.clickable .card-photo-inner { cursor: pointer; }
 
-    /* badge vendido */
+    .cat-badge {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 11px; font-weight: 500;
+      padding: 2px 8px; border-radius: 6px;
+    }
+    .expand-hint {
+      position: absolute; bottom: 7px; left: 8px;
+      background: rgba(0,0,0,0.28); color: #fff;
+      font-size: 11px; border-radius: 4px; padding: 3px 7px;
+      display: flex; align-items: center; gap: 3px;
+    }
     .sold-overlay {
-      position: absolute;
-      inset: 0;
-      background: var(--sold-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.58);
+      display: flex; align-items: center; justify-content: center;
     }
-    .sold-badge {
-      background: #e53935;
-      color: #fff;
-      font-weight: 800;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 8px 18px;
-      border-radius: 6px;
-      transform: rotate(-8deg);
+    .sold-label {
+      background: #E24B4A; color: #fff;
+      font-size: 22px; font-weight: 500;
+      padding: 8px 22px; border-radius: 6px;
     }
 
-    /* category chip on card */
-    .card-category {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .card-body { padding: 8px 12px 10px; display: flex; flex-direction: column; flex: 1; }
 
-    /* body */
-    .card-body {
-      padding: 12px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .name-block { min-height: 52px; margin-bottom: 3px; }
+    .product-name {
+      font-weight: 500; font-size: 14px; line-height: 1.4; margin-bottom: 1px;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
     }
+    .product-desc { font-size: 11px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 16px; }
 
-    .card-id {
-      font-size: 0.7rem;
-      color: #aaa;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+    .price-row  { height: 28px; margin-bottom: 3px; }
+    .price      { font-size: 18px; font-weight: 500; }
+    .price.missing { color: #bbb; }
 
-    .card-name {
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.25;
-    }
+    .date-row   { font-size: 12px; color: #999; }
+    .date-row i { font-size: 13px; vertical-align: -1px; }
 
-    .card-desc {
-      font-size: 0.82rem;
-      color: #666;
-      line-height: 1.4;
-    }
+    .lift-warn { font-size: 10px; color: #BA7517; display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+    .lift-warn i { font-size: 11px; }
 
-    .card-price-row {
-      margin-top: auto;
-      padding-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .link-row  { height: 22px; margin-top: 2px; display: flex; align-items: center; justify-content: space-between; }
+    .orig-link { font-size: 12px; color: #1a6abf; text-decoration: none; display: flex; align-items: center; gap: 3px; line-height: 22px; }
+    .orig-link:hover { text-decoration: underline; }
+    .orig-link i { font-size: 11px; }
 
-    .card-price {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #111;
-    }
+    .spacer { flex: 1; min-height: 8px; }
 
-    .card-senia {
-      font-size: 0.78rem;
-      color: #888;
-    }
-
-    .card-fecha {
-      font-size: 0.75rem;
-      color: #999;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* WhatsApp button */
     .wa-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 9px 0;
-      margin: 8px 12px 12px;
-      border-radius: 8px;
-      transition: background 0.15s;
+      width: 100%; background: #25D366; color: #fff;
+      border: none; border-radius: 8px; padding: 8px;
+      font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: inherit; transition: background 0.15s;
     }
-    .wa-btn:hover { background: var(--accent-dark); }
-    .wa-btn svg { flex-shrink: 0; }
-    .wa-btn.disabled {
-      background: #ccc;
-      pointer-events: none;
-    }
+    .wa-btn:hover { background: #1DAA56; }
+    .wa-btn i { font-size: 16px; }
+    .sold-spacer { height: 34px; }
 
-    /* estados de carga */
-    #status {
-      text-align: center;
-      padding: 60px 20px;
-      color: #888;
-      font-size: 0.95rem;
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 200;
+      align-items: center; justify-content: center;
+      cursor: zoom-out;
     }
+    #lightbox.open { display: flex; }
+    #lightbox-img { max-width: 96%; max-height: 90vh; object-fit: contain; cursor: default; }
+    #lightbox-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: #fff; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #222;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    #lightbox-close:hover { background: #f0f0f0; }
 
-    /* contador */
-    .count-label {
-      font-size: 0.82rem;
-      color: #999;
-      margin-bottom: 14px;
-    }
 
-    @media (max-width: 480px) {
-      .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .card-name { font-size: 0.9rem; }
-      .card-price { font-size: 1rem; }
-    }
+    /* ── Misc ── */
+    .msg { grid-column: 1/-1; text-align: center; padding: 3rem; font-size: 14px; }
+    .msg.loading { color: #aaa; }
+    .msg.error   { color: #E24B4A; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <h1>Venta de artículos 📦</h1>
-    <p class="subtitle">Nos mudamos — todo tiene que irse</p>
-  </div>
-  <div class="tabs" id="tabs"></div>
-</header>
+<div class="page">
+  <header>
+    <h1>המכירה של סבי ואופיר</h1>
+    <p>גבעתיים</p>
+    <button id="lang-btn" onclick="toggleLang()">English</button>
+  </header>
+  <p id="stats"></p>
+  <nav id="filters"></nav>
+  <div id="grid"><div class="msg loading">טוען מוצרים...</div></div>
+</div>
 
-<main>
-  <div id="status">Cargando productos...</div>
-  <div class="count-label" id="count-label" style="display:none"></div>
-  <div class="grid" id="grid"></div>
-</main>
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox();event.stopPropagation()" aria-label="סגור">
+    <i class="ti ti-x"></i>
+  </button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
-  // ════════════════════════════════════════════
-  //  ⚙️  CONFIGURACIÓN — editá estos valores
-  // ════════════════════════════════════════════
-  const CONFIG = {
-    // Tu número de WhatsApp con código de país, sin espacios ni + ni -
-    // Israel: 972 + número sin el 0 inicial. Ejemplo: 972501234567
-    whatsappNumber: '972501234567',
 
-    // URL del Google Sheet publicado como CSV
-    // Instrucciones: Archivo → Publicar en la web → Hoja1 → CSV → Copiar link
-    sheetCsvUrl: 'PEGAR_URL_DEL_SHEET_AQUI',
+// ══════════════════════════════════════════════════════════════════
+//  הגדרות — CONFIGURATION
+//  (עדכן כאן את הפרטים לפני שמשתפים את הדף)
+// ══════════════════════════════════════════════════════════════════
+const CONFIG = {
+  CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPfr5FeRXP_XRaN2Bl2zsUEYuTAd7P7b8hCUKvld7I52epFAUX0yd2fKyAcnw8JreZGQ9UFsO6GlaH/pub?output=csv',
+  WA_SEBI: '972534320437',        // ← מספר וואטסאפ של סבי (ללא +)
+  WA_OFIR: '972XXXXXXXXX',        // ← מספר וואטסאפ של אופיר (ללא +)
+  DRIVE:   'https://drive.google.com/uc?export=view&id=',
+};
+// ══════════════════════════════════════════════════════════════════
 
-    // Título de la página
-    titulo: 'Venta de artículos – Seba & Noam',
+const CATS = {
+  'רהיטים':      { bg: '#E1F5EE', tc: '#085041' },
+  'מוצרי חשמל': { bg: '#E6F1FB', tc: '#042C53' },
+  'ילדים':       { bg: '#EEEDFE', tc: '#26215C' },
+  'מטבח':        { bg: '#FAEEDA', tc: '#412402' },
+  'סלון':        { bg: '#E1F5EE', tc: '#085041' },
+  'חדר עבודה':  { bg: '#E6F1FB', tc: '#042C53' },
+  'שירותים':    { bg: '#E6F1FB', tc: '#042C53' },
+  'חדר הורים':  { bg: '#EEEDFE', tc: '#26215C' },
+  'חדר ילדים':  { bg: '#EEEDFE', tc: '#26215C' },
+  '_':           { bg: '#F1EFE8', tc: '#444441' },
+};
 
-    // Moneda por defecto (si el Sheet no tiene columna Moneda)
-    monedaDefault: '₪',
-  };
-  // ════════════════════════════════════════════
+function cs(cat) { return CATS[cat?.trim()] || CATS['_']; }
 
-  const WA_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.85L.057 23.428a.5.5 0 0 0 .609.61l5.638-1.47A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 0 1-5.031-1.369l-.36-.214-3.742.976.999-3.648-.235-.374A9.861 9.861 0 0 1 2.1 12C2.1 6.534 6.534 2.1 12 2.1c5.466 0 9.9 4.434 9.9 9.9 0 5.466-4.434 9.9-9.9 9.9z"/></svg>`;
+// ── Language ──────────────────────────────────────────────────────
+let LANG = 'he';
 
-  document.title = CONFIG.titulo;
+const T = {
+  he: {
+    all: 'הכל', sold: 'נמכר', zoom: 'הגדל',
+    origLink: 'מוצר מקורי', noLift: 'לא מתאים למעלית',
+    waBtn: n => `שלח הודעה ל${n}`,
+    waMsg: (n, p, id) => `היי ${n}, אני מעוניין/ת ב${p}${id?' (#'+id+')':''}`,
+    stats: (a, s) => `${a} פריטים זמינים` + (s ? ` · ${s} נמכרו` : ''),
+    langBtn: 'English', cats: {},
+  },
+  en: {
+    all: 'All', sold: 'Sold', zoom: 'Zoom',
+    origLink: 'Original product', noLift: 'No elevator',
+    waBtn: n => `Message ${n}`,
+    waMsg: (n, p, id) => `Hi ${n}, I'm interested in ${p}${id?' (#'+id+')':''}`,
+    stats: (a, s) => `${a} items available` + (s ? ` · ${s} sold` : ''),
+    langBtn: 'עברית',
+    cats: {
+      'הכל':'All','רהיטים':'Furniture','מוצרי חשמל':'Appliances',
+      'מטבח':'Kitchen','סלון':'Living Room','חדר עבודה':'Office',
+      'שירותים':'Laundry','חדר הורים':'Bedroom','חדר ילדים':"Kids' Room",
+    },
+  },
+};
 
-  // ── Parse CSV simple (maneja comillas) ──
-  function parseCsv(text) {
-    const rows = [];
-    const lines = text.split(/\r?\n/);
-    lines.forEach(line => {
-      if (!line.trim()) return;
-      const cols = [];
-      let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { inQ = !inQ; }
-        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-        else cur += c;
+function catLabel(c) { return (LANG === 'en' && T.en.cats[c]) ? T.en.cats[c] : c; }
+
+function toggleLang() {
+  LANG = LANG === 'he' ? 'en' : 'he';
+  document.documentElement.dir  = LANG === 'he' ? 'rtl' : 'ltr';
+  document.documentElement.lang = LANG;
+  document.getElementById('lang-btn').textContent = T[LANG].langBtn;
+  render();
+}
+
+function shortName(c) {
+  if (LANG === 'en') return c === 'סבסטיאן' ? 'Sebi' : (c?.trim() || 'Sebi');
+  return c === 'סבסטיאן' ? 'סבי' : (c?.trim() || 'סבי');
+}
+
+function waUrl(contact, name, id) {
+  const num = contact?.trim() === 'אופיר' ? CONFIG.WA_OFIR : CONFIG.WA_SEBI;
+  const msg = encodeURIComponent(T[LANG].waMsg(shortName(contact), name, id));
+  return `https://wa.me/${num}?text=${msg}`;
+}
+
+function parsePrice(v) {
+  const n = parseFloat(String(v || '').replace(/[₪,\s]/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+function bool(v) { return String(v || '').trim().toUpperCase() === 'TRUE'; }
+
+function translateDate(d) {
+  if (LANG !== 'en' || !d) return d;
+  return d
+    .replace('מיידי', 'Immediately')
+    .replace('בינואר','January').replace('בפברואר','February')
+    .replace('במרץ','March').replace('באפריל','April')
+    .replace('במאי','May').replace('ביוני','June')
+    .replace('ביולי','July').replace('באוגוסט','August')
+    .replace('בספטמבר','September').replace('באוקטובר','October')
+    .replace('בנובמבר','November').replace('בדצמבר','December');
+}
+
+function photoSrc(v) {
+  if (!v?.trim()) return null;
+  return v.trim().startsWith('http') ? v.trim() : CONFIG.DRIVE + v.trim();
+}
+
+function photoHtml(p, h) {
+  const src = photoSrc(p.foto);
+  if (src) {
+    return `<img src="${src}" style="width:100%;height:${h}px;object-fit:contain;"
+      alt="${p.name}" loading="lazy"
+      onerror="this.style.display='none'">`;
+  }
+  return '';
+}
+
+let products = [];
+let active   = 'הכל';
+
+// ── Render card ──────────────────────────────────────────────────
+function renderCard(p) {
+  const s      = cs(p.cat);
+  const price  = parsePrice(p.price);
+  const noLift = bool(p.no_lift);
+  const sold   = bool(p.sold);
+  const wa     = waUrl(p.contact, p.name, p.id);
+  const waTxt  = T[LANG].waBtn(shortName(p.contact));
+
+  return `
+  <div class="card${sold ? ' sold' : ''}">
+    <div class="card-photo${!sold ? ' clickable' : ''}">
+      <div class="card-photo-inner"
+        style="background:${s.bg};"
+        ${!sold && photoSrc(p.foto) ? `onclick="openLightbox('${photoSrc(p.foto)}')"` : ''}>
+        ${photoHtml(p, 200)}
+      </div>
+      <span class="cat-badge" style="background:${s.bg};color:${s.tc};">${catLabel(p.cat)}</span>
+      ${sold
+        ? `<div class="sold-overlay"><span class="sold-label">${T[LANG].sold}</span></div>`
+        : photoSrc(p.foto) ? `<span class="expand-hint"><i class="ti ti-zoom-in"></i> ${T[LANG].zoom}</span>` : ''
       }
-      cols.push(cur.trim());
-      rows.push(cols);
-    });
-    return rows;
-  }
-
-  function csvToObjects(rows) {
-    if (rows.length < 2) return [];
-    const headers = rows[0].map(h => h.toLowerCase().replace(/\s+/g, '_'));
-    return rows.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((h, i) => { obj[h] = row[i] || ''; });
-      return obj;
-    });
-  }
-
-  // ── Render ──
-  let allProducts = [];
-  let activeCategory = 'Todos';
-
-  function getCategories(products) {
-    const cats = [...new Set(products.map(p => normalizeStr(p.categoria || p.category || '')).filter(Boolean))];
-    cats.sort();
-    return ['Todos', ...cats];
-  }
-
-  function normalizeStr(s) {
-    return s.trim().charAt(0).toUpperCase() + s.trim().slice(1).toLowerCase();
-  }
-
-  function renderTabs(categories) {
-    const el = document.getElementById('tabs');
-    el.innerHTML = categories.map(c =>
-      `<button class="tab${c === activeCategory ? ' active' : ''}" onclick="filterBy('${c}')">${c}</button>`
-    ).join('');
-  }
-
-  function filterBy(cat) {
-    activeCategory = cat;
-    renderAll();
-  }
-
-  function renderAll() {
-    const cats = getCategories(allProducts);
-    renderTabs(cats);
-
-    const filtered = activeCategory === 'Todos'
-      ? allProducts
-      : allProducts.filter(p => normalizeStr(p.categoria || p.category || '') === activeCategory);
-
-    const countEl = document.getElementById('count-label');
-    const avail = filtered.filter(p => !isSold(p)).length;
-    countEl.textContent = `${avail} disponible${avail !== 1 ? 's' : ''} de ${filtered.length}`;
-    countEl.style.display = 'block';
-
-    document.getElementById('grid').innerHTML = filtered.map(cardHtml).join('');
-  }
-
-  function isSold(p) {
-    const v = (p.vendido || p.sold || '').toLowerCase().trim();
-    return v === 'true' || v === 'sí' || v === 'si' || v === '1' || v === 'vendido';
-  }
-
-  function fmtPrice(p) {
-    const moneda = p.moneda || p.currency || CONFIG.monedaDefault;
-    const precio = p.precio || p.price || '';
-    if (!precio) return '';
-    return `${moneda}${Number(precio).toLocaleString('es-AR')}`;
-  }
-
-  function waLink(p) {
-    const id = p.id || p.producto_id || '?';
-    const nombre = p.nombre || p.name || '';
-    const msg = encodeURIComponent(`Hola! Quiero reservar: *${nombre}* (ID: ${id})`);
-    return `https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`;
-  }
-
-  function cardHtml(p) {
-    const sold = isSold(p);
-    const nombre = p.nombre || p.name || 'Sin nombre';
-    const desc = p.descripcion || p.description || '';
-    const id = p.id || '';
-    const precio = fmtPrice(p);
-    const senia = p.senia || p.seña || p.deposito || '';
-    const fecha = p.fecha_retiro || p.fecha || '';
-    const foto = p.foto || p.foto_url || p.imagen || p.image || '';
-    const cat = normalizeStr(p.categoria || p.category || '');
-
-    const fotoHtml = foto
-      ? `<img src="${foto}" alt="${nombre}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-img>📦</div>'">`
-      : `<div class="no-img">📦</div>`;
-
-    const soldOverlay = sold
-      ? `<div class="sold-overlay"><span class="sold-badge">Vendido</span></div>`
-      : '';
-
-    const precioHtml = precio
-      ? `<div class="card-price">${precio}</div>`
-      : '';
-
-    const seniaHtml = senia
-      ? `<div class="card-senia">Seña: ${CONFIG.monedaDefault}${Number(senia).toLocaleString('es-AR')}</div>`
-      : '';
-
-    const fechaHtml = fecha
-      ? `<div class="card-fecha">📅 Retiro: ${fecha}</div>`
-      : '';
-
-    const btnHtml = sold
-      ? `<a class="wa-btn disabled" href="#">${WA_ICON} Ya vendido</a>`
-      : `<a class="wa-btn" href="${waLink(p)}" target="_blank">${WA_ICON} Reservar</a>`;
-
-    return `
-    <div class="card">
-      <div class="card-img-wrap">
-        ${fotoHtml}
-        ${soldOverlay}
-        ${cat ? `<span class="card-category">${cat}</span>` : ''}
+    </div>
+    <div class="card-body">
+      <div class="name-block">
+        <p class="product-name">${LANG === 'en' && p.name_en ? p.name_en : p.name}</p>
+        <p class="product-desc">${p.desc}</p>
       </div>
-      <div class="card-body">
-        ${id ? `<div class="card-id">#${id}</div>` : ''}
-        <div class="card-name">${nombre}</div>
-        ${desc ? `<div class="card-desc">${desc}</div>` : ''}
-        <div class="card-price-row">
-          ${precioHtml}
-          ${seniaHtml}
-          ${fechaHtml}
-        </div>
+      <div class="price-row">
+        ${!sold
+          ? `<span class="price${price ? '' : ' missing'}">${price ? '₪' + price.toLocaleString() : '—'}</span>`
+          : ''}
       </div>
-      ${btnHtml}
-    </div>`;
+      <p class="date-row"><i class="ti ti-calendar"></i> ${translateDate(p.date) || '—'}</p>
+      <div class="link-row">
+        ${p.link && !sold
+          ? `<a class="orig-link" href="${p.link}" target="_blank" rel="noopener">${T[LANG].origLink} <i class="ti ti-external-link"></i></a>`
+          : '<span></span>'}
+        ${noLift ? `<span class="lift-warn"><i class="ti ti-alert-triangle"></i> ${T[LANG].noLift}</span>` : ''}
+      </div>
+      <div class="spacer"></div>
+      ${!sold
+        ? `<button class="wa-btn" onclick="window.open('${wa}','_blank')"><i class="ti ti-brand-whatsapp"></i>${waTxt}</button>`
+        : `<div class="sold-spacer"></div>`
+      }
+    </div>
+  </div>`;
+}
+
+// ── Lightbox ─────────────────────────────────────────────────────
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Filters + render ─────────────────────────────────────────────
+function render() {
+  const cats  = ['הכל', ...new Set(products.map(p => p.cat).filter(Boolean))];
+  document.getElementById('filters').innerHTML = cats.map(c =>
+    `<button class="pill${c === active ? ' active' : ''}" onclick="setFilter('${c}')">${catLabel(c)}</button>`
+  ).join('');
+
+  const visible = active === 'הכל' ? products : products.filter(p => p.cat === active);
+  const avail   = visible.filter(p => !bool(p.sold));
+  const sold    = visible.filter(p =>  bool(p.sold));
+
+  document.getElementById('grid').innerHTML =
+    [...avail, ...sold].map(renderCard).join('') || '<div class="msg">—</div>';
+
+  document.getElementById('stats').textContent = T[LANG].stats(avail.length, sold.length);
+}
+
+function setFilter(c) { active = c; render(); }
+
+// ── Load data from Sheet ─────────────────────────────────────────
+function load() {
+  if (!CONFIG.CSV_URL || CONFIG.CSV_URL === 'PASTE_CSV_URL_HERE') {
+    document.getElementById('grid').innerHTML =
+      '<div class="msg error">⚠️ יש לעדכן את CSV_URL בהגדרות בראש הקובץ</div>';
+    return;
   }
 
-  // ── Fetch ──
-  async function loadProducts() {
-    const statusEl = document.getElementById('status');
-
-    if (CONFIG.sheetCsvUrl === 'PEGAR_URL_DEL_SHEET_AQUI') {
-      // Modo demo con datos de ejemplo
-      allProducts = DEMO_DATA;
-      statusEl.style.display = 'none';
-      renderAll();
-      return;
+  Papa.parse(CONFIG.CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete({ data }) {
+      products = data
+        .map((r, i) => ({
+          _i:      i,
+          id:      r['ID']?.trim()            || '',
+          sold:    r['Vendido']?.trim()        || 'FALSE',
+          name:    r['Nombre']?.trim()         || '',
+          name_en: r['Nombre_EN']?.trim()      || '',
+          cat:     r['Categoria']?.trim()      || '',
+          desc:    r['Description']?.trim()    || '',
+          price:   r['Precio']?.trim()         || '',
+          foto:    r['Foto_URL']?.trim()        || '',
+          link:    r['Link_original']?.trim()  || '',
+          date:    r['Fecha_retiro']?.trim()   || '',
+          no_lift: r['No_ascensor']?.trim()    || 'FALSE',
+          contact: r['Contacto']?.trim()       || 'סבסטיאן',
+        }))
+        .filter(p => p.name);
+      render();
+    },
+    error() {
+      document.getElementById('grid').innerHTML =
+        '<div class="msg error">שגיאה בטעינת הנתונים — בדוק שה-CSV פורסם כהלכה</div>';
     }
+  });
+}
 
-    try {
-      const resp = await fetch(CONFIG.sheetCsvUrl);
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const text = await resp.text();
-      const rows = parseCsv(text);
-      allProducts = csvToObjects(rows).filter(p => p.nombre || p.name);
-      if (allProducts.length === 0) throw new Error('Sin productos');
-      statusEl.style.display = 'none';
-      renderAll();
-    } catch (e) {
-      statusEl.innerHTML = `
-        <div style="color:#c00;font-size:0.9rem">
-          Error al cargar productos. ¿Está la URL del Sheet correcta y publicada?<br>
-          <small style="color:#aaa">${e.message}</small>
-        </div>`;
-    }
-  }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+load();
 
-  // ── Datos de demo (se usan mientras no hay Sheet configurado) ──
-  const DEMO_DATA = [
-    { id:'MUE-01', nombre:'Mesa de comedor 6 sillas', descripcion:'Madera maciza, muy buen estado', categoria:'Muebles', precio:'2800', moneda:'₪', senia:'500', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
-    { id:'MUE-02', nombre:'Sillón 3 cuerpos', descripcion:'Gris claro, 2 años de uso', categoria:'Muebles', precio:'1500', moneda:'₪', senia:'300', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
-    { id:'MUE-03', nombre:'Cama 2 plazas + colchón', descripcion:'Sommier incluido', categoria:'Muebles', precio:'3200', moneda:'₪', senia:'600', fecha_retiro:'Oct 2026', foto:'', vendido:'true' },
-    { id:'NIN-01', nombre:'Cuna convertible', descripcion:'Hasta 4 años, incluye colchón', categoria:'Niños', precio:'900', moneda:'₪', senia:'0', fecha_retiro:'Sep 2026', foto:'', vendido:'false' },
-    { id:'NIN-02', nombre:'Silla de comer', descripcion:'Ajustable, plegable', categoria:'Niños', precio:'350', moneda:'₪', senia:'0', fecha_retiro:'Sep 2026', foto:'', vendido:'false' },
-    { id:'COC-01', nombre:'Cafetera Nespresso', descripcion:'Con 40 cápsulas', categoria:'Cocina', precio:'400', moneda:'₪', senia:'0', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
-    { id:'COC-02', nombre:'Batidora KitchenAid', descripcion:'Roja, accesorios completos', categoria:'Cocina', precio:'1200', moneda:'₪', senia:'200', fecha_retiro:'Oct 2026', foto:'', vendido:'false' },
-  ];
-
-  loadProducts();
 </script>
-
 </body>
 </html>
