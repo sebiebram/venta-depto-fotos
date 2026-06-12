@@ -191,7 +191,6 @@
   <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
 
 // ══════════════════════════════════════════════════════════════════
@@ -199,7 +198,7 @@
 //  (עדכן כאן את הפרטים לפני שמשתפים את הדף)
 // ══════════════════════════════════════════════════════════════════
 const CONFIG = {
-  CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPfr5FeRXP_XRaN2Bl2zsUEYuTAd7P7b8hCUKvld7I52epFAUX0yd2fKyAcnw8JreZGQ9UFsO6GlaH/pub?output=csv',
+  JSON_URL: 'https://raw.githubusercontent.com/sebiebram/venta-depto-fotos/main/products.json',
   WA_SEBI: '972534320437',        // ← מספר וואטסאפ של סבי (ללא +)
   WA_OFIR: '972523087474',        // ← מספר וואטסאפ של אופיר (ללא +)
   DRIVE:   'https://drive.google.com/uc?export=view&id=',
@@ -270,11 +269,15 @@ function waUrl(contact, name, id) {
 }
 
 function parsePrice(v) {
+  if (typeof v === 'number') return isNaN(v) ? null : v;
   const n = parseFloat(String(v || '').replace(/[₪,\s]/g, ''));
   return isNaN(n) ? null : n;
 }
 
-function bool(v) { return String(v || '').trim().toUpperCase() === 'TRUE'; }
+function bool(v) {
+  if (typeof v === 'boolean') return v;
+  return String(v || '').trim().toUpperCase() === 'TRUE';
+}
 
 function translateDate(d) {
   if (LANG !== 'en' || !d) return d;
@@ -386,43 +389,18 @@ function render() {
 
 function setFilter(c) { active = c; render(); }
 
-// ── Load data from Sheet ─────────────────────────────────────────
-function load() {
-  if (!CONFIG.CSV_URL || CONFIG.CSV_URL === 'PASTE_CSV_URL_HERE') {
+// ── Load data from JSON ──────────────────────────────────────────
+async function load() {
+  try {
+    const res = await fetch(`${CONFIG.JSON_URL}?t=${Date.now()}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    products = Array.isArray(data) ? data.filter(p => p.name) : [];
+    render();
+  } catch(e) {
     document.getElementById('grid').innerHTML =
-      '<div class="msg error">⚠️ יש לעדכן את CSV_URL בהגדרות בראש הקובץ</div>';
-    return;
+      '<div class="msg error">שגיאה בטעינת הנתונים</div>';
   }
-
-  Papa.parse(CONFIG.CSV_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete({ data }) {
-      products = data
-        .map((r, i) => ({
-          _i:      i,
-          id:      r['ID']?.trim()            || '',
-          sold:    r['Vendido']?.trim()        || 'FALSE',
-          name:    r['Nombre']?.trim()         || '',
-          name_en: r['Nombre_EN']?.trim()      || '',
-          cat:     r['Categoria']?.trim()      || '',
-          desc:    r['Description']?.trim()    || '',
-          price:   r['Precio']?.trim()         || '',
-          foto:    r['Foto_URL']?.trim()        || '',
-          link:    r['Link_original']?.trim()  || '',
-          date:    r['Fecha_retiro']?.trim()   || '',
-          no_lift: r['No_ascensor']?.trim()    || 'FALSE',
-          contact: r['Contacto']?.trim()       || 'סבסטיאן',
-        }))
-        .filter(p => p.name);
-      render();
-    },
-    error() {
-      document.getElementById('grid').innerHTML =
-        '<div class="msg error">שגיאה בטעינת הנתונים — בדוק שה-CSV פורסם כהלכה</div>';
-    }
-  });
 }
 
 document.addEventListener('keydown', e => {

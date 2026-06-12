@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Admin — מכירה</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.29.0/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --card: #fff;
+      --border: #e2e2e0;
+      --text: #1a1a1a;
+      --muted: #888;
+      --green: #25D366;
+      --green-dark: #1DAA56;
+      --red: #E24B4A;
+      --blue: #1a6abf;
+      --warn: #BA7517;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Setup screen ── */
+    #setup {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    #setup.visible { display: flex; }
+    .setup-box {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+    .setup-box h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+    .setup-box p  { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.5; }
+
+    /* ── Main screen ── */
+    #main { display: none; }
+    #main.visible { display: block; }
+
+    .top-bar {
+      background: var(--card);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .top-bar h1 { font-size: 16px; font-weight: 600; }
+    .top-bar-actions { display: flex; gap: 8px; }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 1rem 1rem 6rem; }
+
+    /* ── Status bar ── */
+    #status-bar {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    #status-bar.saving  { display: block; background: #E6F1FB; color: #042C53; }
+    #status-bar.success { display: block; background: #E1F5EE; color: #085041; }
+    #status-bar.error   { display: block; background: #FEE2E2; color: #7F1D1D; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 8px 14px; border-radius: 8px; border: none;
+      font-size: 13px; cursor: pointer; font-family: inherit;
+      transition: background 0.15s; font-weight: 500;
+    }
+    .btn i { font-size: 15px; }
+    .btn-primary   { background: var(--text); color: #fff; }
+    .btn-primary:hover   { background: #333; }
+    .btn-secondary { background: var(--card); color: var(--text); border: 0.5px solid var(--border); }
+    .btn-secondary:hover { border-color: #aaa; }
+    .btn-danger    { background: var(--red); color: #fff; }
+    .btn-danger:hover    { background: #c43f3e; }
+    .btn-green     { background: var(--green); color: #fff; }
+    .btn-green:hover     { background: var(--green-dark); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    /* ── Stats ── */
+    .stats { font-size: 12px; color: var(--muted); margin-bottom: 1rem; }
+
+    /* ── Product cards ── */
+    .product-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .product-card.sold { opacity: 0.6; }
+    .product-thumb {
+      width: 56px; height: 56px; border-radius: 8px;
+      object-fit: cover; flex-shrink: 0;
+      background: var(--bg);
+    }
+    .product-thumb-placeholder {
+      width: 56px; height: 56px; border-radius: 8px;
+      background: var(--bg); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #ccc; font-size: 22px;
+    }
+    .product-info { flex: 1; min-width: 0; }
+    .product-info .name {
+      font-size: 14px; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-info .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .product-info .price { font-size: 13px; font-weight: 500; margin-top: 1px; }
+    .sold-badge {
+      font-size: 11px; background: var(--red); color: #fff;
+      padding: 1px 6px; border-radius: 4px; font-weight: 500;
+    }
+    .product-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* ── Modal ── */
+    #modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    #modal.open { display: block; }
+    .modal-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .modal-header h2 { font-size: 17px; font-weight: 600; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--bg); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--text);
+    }
+
+    /* ── Form ── */
+    .form-row { margin-bottom: 1rem; }
+    .form-row label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .form-row input[type=text],
+    .form-row input[type=number],
+    .form-row select,
+    .form-row textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--card);
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+      outline: none; border-color: #999;
+    }
+    .form-row textarea { resize: vertical; min-height: 60px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .checkbox-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0;
+    }
+    .checkbox-row input[type=checkbox] {
+      width: 18px; height: 18px; accent-color: var(--text); cursor: pointer;
+    }
+    .checkbox-row label { font-size: 14px; cursor: pointer; }
+
+    .foto-preview {
+      margin-top: 6px; border-radius: 8px; overflow: hidden;
+      height: 120px; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .foto-preview img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .foto-preview-empty { color: var(--muted); font-size: 12px; }
+
+    .modal-footer {
+      display: flex; gap: 8px; margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .modal-footer .btn { flex: 1; justify-content: center; }
+
+    /* ── Import dialog ── */
+    #import-bar {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    #import-bar.visible { display: block; }
+    #import-bar p { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    #import-bar input {
+      width: 100%; padding: 8px 10px;
+      border: 0.5px solid var(--border); border-radius: 6px;
+      font-size: 12px; font-family: inherit; margin-bottom: 8px;
+    }
+    #import-bar .import-actions { display: flex; gap: 8px; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem; color: var(--muted);
+    }
+    .empty-state i { font-size: 40px; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── Input ── */
+    .input {
+      width: 100%; padding: 10px 12px;
+      border: 0.5px solid var(--border); border-radius: 8px;
+      font-size: 14px; font-family: inherit; color: var(--text);
+      background: var(--card);
+    }
+    .input:focus { outline: none; border-color: #999; }
+  </style>
+</head>
+<body>
+
+<!-- ══ SETUP SCREEN ══ -->
+<div id="setup">
+  <div class="setup-box">
+    <h1>Admin — הגדרה</h1>
+    <p>הכנס את ה-GitHub Personal Access Token שנוצר עבור המכירה. הטוקן יישמר במכשיר הזה.</p>
+    <div class="form-row">
+      <label>GitHub Token</label>
+      <input class="input" type="password" id="token-input" placeholder="ghp_..." autocomplete="off">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px;" onclick="saveToken()">
+      <i class="ti ti-check"></i> כניסה
+    </button>
+  </div>
+</div>
+
+<!-- ══ MAIN SCREEN ══ -->
+<div id="main">
+  <div class="top-bar">
+    <h1><i class="ti ti-layout-dashboard" style="vertical-align:-2px;margin-left:4px;"></i> Admin</h1>
+    <div class="top-bar-actions">
+      <button class="btn btn-secondary btn-sm" onclick="toggleImport()">
+        <i class="ti ti-download"></i> Import
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="logout()">
+        <i class="ti ti-logout"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div id="status-bar"></div>
+
+    <!-- Import bar -->
+    <div id="import-bar">
+      <p>הדבק את ה-URL של ה-Google Sheets CSV כדי לייבא את כל המוצרים הקיימים (פעולה חד פעמית).</p>
+      <input id="csv-url-input" type="text"
+        placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+        value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSPfr5FeRXP_XRaN2Bl2zsUEYuTAd7P7b8hCUKvld7I52epFAUX0yd2fKyAcnw8JreZGQ9UFsO6GlaH/pub?output=csv">
+      <div class="import-actions">
+        <button class="btn btn-primary btn-sm" onclick="importFromSheets()">
+          <i class="ti ti-file-import"></i> ייבא
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="toggleImport()">ביטול</button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="openModal(-1)">
+        <i class="ti ti-plus"></i> מוצר חדש
+      </button>
+    </div>
+
+    <p class="stats" id="stats-bar"></p>
+    <div id="product-list"></div>
+  </div>
+</div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div id="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="modal-title">מוצר חדש</h2>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+
+    <div class="form-row">
+      <label>שם המוצר *</label>
+      <input type="text" id="f-name" placeholder="שולחן עבודה">
+    </div>
+    <div class="form-row">
+      <label>שם באנגלית (אופציונלי)</label>
+      <input type="text" id="f-name-en" placeholder="Office desk" dir="ltr">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0">
+        <label>קטגוריה *</label>
+        <select id="f-cat">
+          <option value="">בחר...</option>
+          <option>רהיטים</option>
+          <option>מוצרי חשמל</option>
+          <option>מטבח</option>
+          <option>סלון</option>
+          <option>חדר עבודה</option>
+          <option>חדר הורים</option>
+          <option>חדר ילדים</option>
+          <option>ילדים</option>
+          <option>שירותים</option>
+          <option>אחר</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label>מחיר (₪) *</label>
+        <input type="number" id="f-price" placeholder="500" min="0" dir="ltr">
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-top:1rem">
+      <label>תיאור קצר</label>
+      <input type="text" id="f-desc" placeholder='דגם NORDMYRA, לבן, 73×150 ס"מ'>
+    </div>
+
+    <div class="form-row">
+      <label>URL של התמונה</label>
+      <input type="text" id="f-foto" placeholder="https://raw.githubusercontent.com/..." dir="ltr"
+        oninput="updateFotoPreview()">
+      <div class="foto-preview" id="foto-preview">
+        <span class="foto-preview-empty">אין תמונה</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>קישור למוצר מקורי</label>
+      <input type="text" id="f-link" placeholder="https://ksp.co.il/..." dir="ltr">
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0">
+        <label>תאריך פינוי</label>
+        <input type="text" id="f-date" placeholder="אוגוסט 2026">
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label>איש קשר</label>
+        <select id="f-contact">
+          <option value="סבסטיאן">סבי</option>
+          <option value="אופיר">אופיר</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <div class="checkbox-row">
+        <input type="checkbox" id="f-no-lift">
+        <label for="f-no-lift">לא מתאים למעלית</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="f-sold">
+        <label for="f-sold">נמכר</label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveProduct()">
+        <i class="ti ti-device-floppy"></i> שמור
+      </button>
+      <button id="btn-delete" class="btn btn-danger" onclick="deleteProduct()" style="display:none">
+        <i class="ti ti-trash"></i> מחק
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════════
+const REPO   = 'sebiebram/venta-depto-fotos';
+const FILE   = 'products.json';
+const BRANCH = 'main';
+const API    = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
+
+// ══════════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════════
+let token    = '';
+let products = [];
+let fileSha  = '';
+let editIdx  = -1; // -1 = new product
+
+// ══════════════════════════════════════════════════════════════════
+//  UTF-8 safe base64
+// ══════════════════════════════════════════════════════════════════
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function fromBase64(b64) {
+  const binary = atob(b64.replace(/\s/g, ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════
+function init() {
+  token = localStorage.getItem('admin_token') || '';
+  if (!token) {
+    document.getElementById('setup').classList.add('visible');
+  } else {
+    document.getElementById('main').classList.add('visible');
+    loadProducts();
+  }
+}
+
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  token = t;
+  localStorage.setItem('admin_token', t);
+  document.getElementById('setup').classList.remove('visible');
+  document.getElementById('main').classList.add('visible');
+  loadProducts();
+}
+
+function logout() {
+  if (!confirm('להתנתק?')) return;
+  localStorage.removeItem('admin_token');
+  token = '';
+  products = [];
+  fileSha = '';
+  document.getElementById('main').classList.remove('visible');
+  document.getElementById('setup').classList.add('visible');
+  document.getElementById('token-input').value = '';
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  GITHUB API
+// ══════════════════════════════════════════════════════════════════
+async function loadProducts() {
+  setStatus('saving', 'טוען מוצרים...');
+  try {
+    const res = await fetch(API, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (res.status === 404) {
+      // File doesn't exist yet — start fresh
+      products = [];
+      fileSha = '';
+      setStatus('success', 'מוכן — אין עדיין מוצרים. הוסף את הראשון!');
+      renderList();
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    fileSha  = data.sha;
+    products = JSON.parse(fromBase64(data.content));
+    setStatus('success', `נטען — ${products.length} מוצרים`);
+    setTimeout(() => setStatus(''), 2000);
+    renderList();
+  } catch(e) {
+    setStatus('error', 'שגיאה בטעינה: ' + e.message);
+  }
+}
+
+async function saveToGitHub() {
+  setStatus('saving', 'שומר...');
+  try {
+    const body = {
+      message: 'Update products via admin',
+      content: toBase64(JSON.stringify(products, null, 2)),
+      branch:  BRANCH,
+    };
+    if (fileSha) body.sha = fileSha;
+
+    const res = await fetch(API, {
+      method:  'PUT',
+      headers: {
+        Authorization:  `token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'HTTP ' + res.status);
+    }
+    const data = await res.json();
+    fileSha = data.content.sha;
+    setStatus('success', 'נשמר בהצלחה');
+    setTimeout(() => setStatus(''), 2500);
+    renderList();
+  } catch(e) {
+    setStatus('error', 'שגיאה בשמירה: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  STATUS BAR
+// ══════════════════════════════════════════════════════════════════
+function setStatus(type, msg) {
+  const el = document.getElementById('status-bar');
+  el.className = type ? `${type}` : '';
+  el.textContent = msg || '';
+  if (type) el.style.display = 'block';
+  else      el.style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RENDER LIST
+// ══════════════════════════════════════════════════════════════════
+function renderList() {
+  const avail = products.filter(p => !p.sold).length;
+  const sold  = products.filter(p =>  p.sold).length;
+  document.getElementById('stats-bar').textContent =
+    `${avail} זמינים · ${sold} נמכרו · ${products.length} סה"כ`;
+
+  const el = document.getElementById('product-list');
+  if (!products.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-box-off"></i>
+        <p>אין מוצרים עדיין<br>לחץ "+ מוצר חדש" כדי להוסיף</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = products.map((p, i) => {
+    const price = p.price ? '₪' + Number(p.price).toLocaleString() : '—';
+    const thumb = p.foto
+      ? `<img class="product-thumb" src="${p.foto}" alt="" onerror="this.style.display='none'">`
+      : `<div class="product-thumb-placeholder"><i class="ti ti-photo"></i></div>`;
+    return `
+      <div class="product-card${p.sold ? ' sold' : ''}">
+        ${thumb}
+        <div class="product-info">
+          <div class="name">${p.name}${p.sold ? ' <span class="sold-badge">נמכר</span>' : ''}</div>
+          <div class="meta">${p.cat || '—'} · ${p.contact === 'אופיר' ? 'אופיר' : 'סבי'}</div>
+          <div class="price">${price}</div>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-secondary btn-sm" onclick="toggleSold(${i})" title="${p.sold ? 'סמן כזמין' : 'סמן כנמכר'}">
+            <i class="ti ti-${p.sold ? 'refresh' : 'check'}"></i>
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="openModal(${i})">
+            <i class="ti ti-edit"></i>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  TOGGLE SOLD (inline, no modal)
+// ══════════════════════════════════════════════════════════════════
+async function toggleSold(i) {
+  products[i].sold = !products[i].sold;
+  await saveToGitHub();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════════════
+function openModal(idx) {
+  editIdx = idx;
+  const isNew = idx === -1;
+  document.getElementById('modal-title').textContent = isNew ? 'מוצר חדש' : 'עריכת מוצר';
+  document.getElementById('btn-delete').style.display = isNew ? 'none' : '';
+
+  const p = isNew ? {} : products[idx];
+  document.getElementById('f-name').value      = p.name     || '';
+  document.getElementById('f-name-en').value   = p.name_en  || '';
+  document.getElementById('f-cat').value        = p.cat      || '';
+  document.getElementById('f-price').value      = p.price != null ? p.price : '';
+  document.getElementById('f-desc').value       = p.desc     || '';
+  document.getElementById('f-foto').value       = p.foto     || '';
+  document.getElementById('f-link').value       = p.link     || '';
+  document.getElementById('f-date').value       = p.date     || '';
+  document.getElementById('f-contact').value    = p.contact  || 'סבסטיאן';
+  document.getElementById('f-no-lift').checked  = !!p.no_lift;
+  document.getElementById('f-sold').checked     = !!p.sold;
+
+  updateFotoPreview();
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('f-name').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function updateFotoPreview() {
+  const url = document.getElementById('f-foto').value.trim();
+  const el  = document.getElementById('foto-preview');
+  if (url) {
+    el.innerHTML = `<img src="${url}" alt="" onerror="this.outerHTML='<span class=\\'foto-preview-empty\\'>URL inválida</span>'">`;
+  } else {
+    el.innerHTML = '<span class="foto-preview-empty">אין תמונה</span>';
+  }
+}
+
+async function saveProduct() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) {
+    alert('שם המוצר הוא שדה חובה');
+    document.getElementById('f-name').focus();
+    return;
+  }
+
+  const p = {
+    name:    name,
+    name_en: document.getElementById('f-name-en').value.trim(),
+    cat:     document.getElementById('f-cat').value,
+    price:   parseFloat(document.getElementById('f-price').value) || 0,
+    desc:    document.getElementById('f-desc').value.trim(),
+    foto:    document.getElementById('f-foto').value.trim(),
+    link:    document.getElementById('f-link').value.trim(),
+    date:    document.getElementById('f-date').value.trim(),
+    contact: document.getElementById('f-contact').value,
+    no_lift: document.getElementById('f-no-lift').checked,
+    sold:    document.getElementById('f-sold').checked,
+    id:      editIdx === -1 ? (products.length + 1).toString().padStart(3, '0') : (products[editIdx].id || ''),
+  };
+
+  if (editIdx === -1) {
+    products.push(p);
+  } else {
+    products[editIdx] = p;
+  }
+
+  closeModal();
+  await saveToGitHub();
+}
+
+async function deleteProduct() {
+  if (editIdx === -1) return;
+  const name = products[editIdx].name;
+  if (!confirm(`למחוק את "${name}"?`)) return;
+  products.splice(editIdx, 1);
+  closeModal();
+  await saveToGitHub();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  IMPORT FROM GOOGLE SHEETS
+// ══════════════════════════════════════════════════════════════════
+function toggleImport() {
+  const el = document.getElementById('import-bar');
+  el.classList.toggle('visible');
+}
+
+async function importFromSheets() {
+  const csvUrl = document.getElementById('csv-url-input').value.trim();
+  if (!csvUrl) return alert('הכנס URL של ה-CSV');
+
+  setStatus('saving', 'מייבא מ-Google Sheets...');
+  document.getElementById('import-bar').classList.remove('visible');
+
+  Papa.parse(csvUrl, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete({ data }) {
+      const imported = data
+        .map((r, i) => ({
+          id:      r['ID']?.trim()           || String(i + 1).padStart(3, '0'),
+          name:    r['Nombre']?.trim()        || '',
+          name_en: r['Nombre_EN']?.trim()     || '',
+          cat:     r['Categoria']?.trim()     || '',
+          desc:    r['Description']?.trim()   || '',
+          price:   parseFloat(r['Precio'])    || 0,
+          foto:    r['Foto_URL']?.trim()       || '',
+          link:    r['Link_original']?.trim() || '',
+          date:    r['Fecha_retiro']?.trim()  || '',
+          no_lift: (r['No_ascensor']?.trim().toUpperCase() === 'TRUE'),
+          sold:    (r['Vendido']?.trim().toUpperCase() === 'TRUE'),
+          contact: r['Contacto']?.trim()      || 'סבסטיאן',
+        }))
+        .filter(p => p.name);
+
+      if (!imported.length) {
+        setStatus('error', 'לא נמצאו מוצרים — בדוק את ה-URL');
+        return;
+      }
+
+      if (products.length > 0) {
+        if (!confirm(`יש כבר ${products.length} מוצרים. להחליף הכל ב-${imported.length} המוצרים מה-Sheet?`)) {
+          setStatus('');
+          return;
+        }
+      }
+
+      products = imported;
+      saveToGitHub();
+    },
+    error(e) {
+      setStatus('error', 'שגיאה בקריאת ה-CSV: ' + e.message);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ══════════════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
