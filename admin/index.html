@@ -406,6 +406,10 @@
         <input type="checkbox" id="f-sold">
         <label for="f-sold">נמכר</label>
       </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="f-hidden">
+        <label for="f-hidden" style="color:#888;">מוסתר — לא מופיע בדף הציבורי</label>
+      </div>
     </div>
 
     <div class="modal-footer">
@@ -589,7 +593,7 @@ function renderList() {
       <div class="product-card${p.sold ? ' sold' : ''}">
         ${thumb}
         <div class="product-info">
-          <div class="name">${p.name}${p.sold ? ' <span class="sold-badge">נמכר</span>' : ''}</div>
+          <div class="name">${p.name}${p.sold ? ' <span class="sold-badge">נמכר</span>' : ''}${p.hidden ? ' <span class="sold-badge" style="background:#aaa;">מוסתר</span>' : ''}</div>
           <div class="meta">${p.cat || '—'} · ${p.contact === 'אופיר' ? 'אופיר' : 'סבי'}</div>
           <div class="price">${price}</div>
         </div>
@@ -634,6 +638,7 @@ function openModal(idx) {
   document.getElementById('f-contact').value    = p.contact  || 'סבסטיאן';
   document.getElementById('f-no-lift').checked  = !!p.no_lift;
   document.getElementById('f-sold').checked     = !!p.sold;
+  document.getElementById('f-hidden').checked   = !!p.hidden;
 
   updateFotoPreview();
   document.getElementById('modal').classList.add('open');
@@ -676,6 +681,7 @@ async function saveProduct() {
     contact: document.getElementById('f-contact').value,
     no_lift: document.getElementById('f-no-lift').checked,
     sold:    document.getElementById('f-sold').checked,
+    hidden:  document.getElementById('f-hidden').checked,
     id:      editIdx === -1 ? (products.length + 1).toString().padStart(3, '0') : (products[editIdx].id || ''),
   };
 
