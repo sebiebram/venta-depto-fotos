@@ -21,16 +21,7 @@
     header { text-align: center; padding: 1.5rem 0 1rem; position: relative; }
     header h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
     header p  { font-size: 13px; color: #888; }
-    #lang-btn {
-      position: absolute; top: 1.5rem; left: 0;
-      background: transparent; border: 0.5px solid #d8d8d8;
-      border-radius: 20px; padding: 5px 13px;
-      font-size: 12px; color: #888; cursor: pointer;
-      font-family: inherit; transition: all 0.15s;
-    }
-    #lang-btn:hover { border-color: #999; color: #333; }
-
-    #stats { font-size: 12px; color: #999; margin-bottom: 10px; }
+#stats { font-size: 12px; color: #999; margin-bottom: 10px; }
 
     #filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
 
@@ -177,7 +168,6 @@
   <header>
     <h1>המכירה של סבי ואופיר</h1>
     <p>גבעתיים</p>
-    <button id="lang-btn" onclick="toggleLang()">English</button>
   </header>
   <p id="stats"></p>
   <nav id="filters"></nav>
@@ -220,51 +210,14 @@ const CATS = {
 
 function cs(cat) { return CATS[cat?.trim()] || CATS['_']; }
 
-// ── Language ──────────────────────────────────────────────────────
-let LANG = 'he';
-
-const T = {
-  he: {
-    all: 'הכל', sold: 'נמכר', zoom: 'הגדל',
-    origLink: 'מוצר מקורי', noLift: 'לא מתאים למעלית',
-    waBtn: n => `שלח הודעה ל${n}`,
-    waMsg: (n, p, id) => `היי ${n}, אני מעוניין/ת ב${p}${id?' (#'+id+')':''}`,
-    stats: (a, s) => `${a} פריטים זמינים` + (s ? ` · ${s} נמכרו` : ''),
-    langBtn: 'English', cats: {},
-  },
-  en: {
-    all: 'All', sold: 'Sold', zoom: 'Zoom',
-    origLink: 'Original product', noLift: 'No elevator',
-    waBtn: n => `Message ${n}`,
-    waMsg: (n, p, id) => `Hi ${n}, I'm interested in ${p}${id?' (#'+id+')':''}`,
-    stats: (a, s) => `${a} items available` + (s ? ` · ${s} sold` : ''),
-    langBtn: 'עברית',
-    cats: {
-      'הכל':'All','רהיטים':'Furniture','מוצרי חשמל':'Appliances',
-      'מטבח':'Kitchen','סלון':'Living Room','חדר עבודה':'Office',
-      'שירותים':'Laundry','חדר הורים':'Bedroom','חדר ילדים':"Kids' Room",
-    },
-  },
-};
-
-function catLabel(c) { return (LANG === 'en' && T.en.cats[c]) ? T.en.cats[c] : c; }
-
-function toggleLang() {
-  LANG = LANG === 'he' ? 'en' : 'he';
-  document.documentElement.dir  = LANG === 'he' ? 'rtl' : 'ltr';
-  document.documentElement.lang = LANG;
-  document.getElementById('lang-btn').textContent = T[LANG].langBtn;
-  render();
-}
-
 function shortName(c) {
-  if (LANG === 'en') return c === 'סבסטיאן' ? 'Sebi' : (c?.trim() || 'Sebi');
-  return c === 'סבסטיאן' ? 'סבי' : (c?.trim() || 'סבי');
+  return c === 'אופיר' ? 'אופיר' : 'סבי';
 }
 
 function waUrl(contact, name, id) {
   const num = contact?.trim() === 'אופיר' ? CONFIG.WA_OFIR : CONFIG.WA_SEBI;
-  const msg = encodeURIComponent(T[LANG].waMsg(shortName(contact), name, id));
+  const n   = shortName(contact);
+  const msg = encodeURIComponent(`היי ${n}, אני מעוניין/ת ב${name}${id?' (#'+id+')':''}`);
   return `https://wa.me/${num}?text=${msg}`;
 }
 
@@ -279,31 +232,9 @@ function bool(v) {
   return String(v || '').trim().toUpperCase() === 'TRUE';
 }
 
-function translateDate(d) {
-  if (LANG !== 'en' || !d) return d;
-  return d
-    .replace('מיידי', 'Immediately')
-    .replace('בינואר','January').replace('בפברואר','February')
-    .replace('במרץ','March').replace('באפריל','April')
-    .replace('במאי','May').replace('ביוני','June')
-    .replace('ביולי','July').replace('באוגוסט','August')
-    .replace('בספטמבר','September').replace('באוקטובר','October')
-    .replace('בנובמבר','November').replace('בדצמבר','December');
-}
-
 function photoSrc(v) {
   if (!v?.trim()) return null;
   return v.trim().startsWith('http') ? v.trim() : CONFIG.DRIVE + v.trim();
-}
-
-function photoHtml(p, h) {
-  const src = photoSrc(p.foto);
-  if (src) {
-    return `<img src="${src}" style="width:100%;height:${h}px;object-fit:contain;"
-      alt="${p.name}" loading="lazy"
-      onerror="this.style.display='none'">`;
-  }
-  return '';
 }
 
 let products = [];
@@ -316,38 +247,37 @@ function renderCard(p) {
   const noLift = bool(p.no_lift);
   const sold   = bool(p.sold);
   const wa     = waUrl(p.contact, p.name, p.id);
-  const waTxt  = T[LANG].waBtn(shortName(p.contact));
+  const waTxt  = `שלח הודעה ל${shortName(p.contact)}`;
+  const foto   = photoSrc(p.foto);
 
   return `
   <div class="card${sold ? ' sold' : ''}">
-    <div class="card-photo${!sold ? ' clickable' : ''}">
+    <div class="card-photo${!sold && foto ? ' clickable' : ''}">
       <div class="card-photo-inner"
         style="background:${s.bg};"
-        ${!sold && photoSrc(p.foto) ? `onclick="openLightbox('${photoSrc(p.foto)}')"` : ''}>
-        ${photoHtml(p, 200)}
+        ${!sold && foto ? `onclick="openLightbox('${foto}')"` : ''}>
+        ${foto ? `<img src="${foto}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">` : ''}
       </div>
-      <span class="cat-badge" style="background:${s.bg};color:${s.tc};">${catLabel(p.cat)}</span>
+      <span class="cat-badge" style="background:${s.bg};color:${s.tc};">${p.cat}</span>
       ${sold
-        ? `<div class="sold-overlay"><span class="sold-label">${T[LANG].sold}</span></div>`
-        : photoSrc(p.foto) ? `<span class="expand-hint"><i class="ti ti-zoom-in"></i> ${T[LANG].zoom}</span>` : ''
+        ? `<div class="sold-overlay"><span class="sold-label">נמכר</span></div>`
+        : foto ? `<span class="expand-hint"><i class="ti ti-zoom-in"></i> הגדל</span>` : ''
       }
     </div>
     <div class="card-body">
       <div class="name-block">
-        <p class="product-name">${LANG === 'en' && p.name_en ? p.name_en : p.name}</p>
-        <p class="product-desc">${p.desc}</p>
+        <p class="product-name">${p.name}</p>
+        <p class="product-desc">${p.desc || ''}</p>
       </div>
       <div class="price-row">
-        ${!sold
-          ? `<span class="price${price ? '' : ' missing'}">${price ? '₪' + price.toLocaleString() : '—'}</span>`
-          : ''}
+        <span class="price${price ? '' : ' missing'}">${price ? '₪' + price.toLocaleString() : '—'}</span>
       </div>
-      <p class="date-row"><i class="ti ti-calendar"></i> ${translateDate(p.date) || '—'}</p>
+      <p class="date-row"><i class="ti ti-calendar"></i> ${p.date || '—'}</p>
       <div class="link-row">
         ${p.link && !sold
-          ? `<a class="orig-link" href="${p.link}" target="_blank" rel="noopener">${T[LANG].origLink} <i class="ti ti-external-link"></i></a>`
+          ? `<a class="orig-link" href="${p.link}" target="_blank" rel="noopener">מוצר מקורי <i class="ti ti-external-link"></i></a>`
           : '<span></span>'}
-        ${noLift ? `<span class="lift-warn"><i class="ti ti-alert-triangle"></i> ${T[LANG].noLift}</span>` : ''}
+        ${noLift ? `<span class="lift-warn"><i class="ti ti-alert-triangle"></i> לא מתאים למעלית</span>` : ''}
       </div>
       <div class="spacer"></div>
       ${!sold
@@ -372,19 +302,21 @@ function closeLightbox() {
 
 // ── Filters + render ─────────────────────────────────────────────
 function render() {
-  const cats  = ['הכל', ...new Set(products.map(p => p.cat).filter(Boolean))];
+  const visible_all = products.filter(p => !p.hidden);
+  const cats = ['הכל', ...new Set(visible_all.map(p => p.cat).filter(Boolean))];
   document.getElementById('filters').innerHTML = cats.map(c =>
-    `<button class="pill${c === active ? ' active' : ''}" onclick="setFilter('${c}')">${catLabel(c)}</button>`
+    `<button class="pill${c === active ? ' active' : ''}" onclick="setFilter('${c}')">${c}</button>`
   ).join('');
 
-  const visible = active === 'הכל' ? products : products.filter(p => p.cat === active);
+  const visible = active === 'הכל' ? visible_all : visible_all.filter(p => p.cat === active);
   const avail   = visible.filter(p => !bool(p.sold));
   const sold    = visible.filter(p =>  bool(p.sold));
 
   document.getElementById('grid').innerHTML =
     [...avail, ...sold].map(renderCard).join('') || '<div class="msg">—</div>';
 
-  document.getElementById('stats').textContent = T[LANG].stats(avail.length, sold.length);
+  document.getElementById('stats').textContent =
+    `${avail.length} פריטים זמינים` + (sold.length ? ` · ${sold.length} נמכרו` : '');
 }
 
 function setFilter(c) { active = c; render(); }
