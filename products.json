@@ -280,18 +280,19 @@
     "contact": "סבסטיאן"
   },
   {
-    "id": "021",
     "name": "שטיח",
-    "name_en": "",
+    "name_en": "Carpet",
     "cat": "סלון",
-    "desc": "",
     "price": 400,
-    "foto": "",
+    "desc": "",
+    "foto": "https://raw.githubusercontent.com/sebiebram/venta-depto-fotos/main/alfombra-salon.jpg",
     "link": "",
     "date": "1-12/08",
+    "contact": "סבסטיאן",
     "no_lift": false,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "021"
   },
   {
     "id": "022",
