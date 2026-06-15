@@ -42,18 +42,19 @@
     "contact": "אופיר"
   },
   {
-    "id": "004",
-    "name": "טלויזיה",
+    "name": "טלויזיה חכמה",
     "name_en": "",
     "cat": "סלון",
-    "desc": "LG Nanocell 50\"",
     "price": 800,
+    "desc": "LG Nanocell 50\"",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/tv.jpg",
     "link": "",
     "date": "8-12/08",
+    "contact": "אופיר",
     "no_lift": false,
     "sold": false,
-    "contact": "אופיר"
+    "hidden": false,
+    "id": "004"
   },
   {
     "id": "005",
