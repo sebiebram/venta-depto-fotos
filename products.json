@@ -267,18 +267,19 @@
     "contact": "סבסטיאן"
   },
   {
-    "id": "020",
     "name": "מיטה + מזרן",
     "name_en": "",
     "cat": "חדר ילדים",
-    "desc": "",
     "price": 400,
-    "foto": "",
+    "desc": "",
+    "foto": "https://babyland-netanya.co.il/images/thumbnails/777/560/detailed/74/id1vdye__1693393614.jpg",
     "link": "https://babyland-netanya.co.il/%D7%A8%D7%99%D7%94%D7%95%D7%98-he-2/%D7%9E%D7%99%D7%98%D7%AA-%D7%AA%D7%99%D7%A0%D7%95%D7%A7-%D7%95%D7%95%D7%9C%D7%A7%D7%A0%D7%95-%D7%9C%D7%91%D7%9F-%D7%A9%D7%99%D7%9C%D7%95%D7%91-%D7%A2%D7%A5-xl-%D7%A1%D7%92%D7%9C-%D7%91%D7%99%D7%99%D7%91%D7%99-urban-%D7%9B%D7%A0%D7%99%D7%A1%D7%94-%D7%9C%D7%9E%D7%9C%D7%90%D7%99-%D7%A1%D7%95%D7%A3-%D7%99%D7%95%D7%9C%D7%99/?srsltid=AfmBOorPUoSTfb-DQunbNhKM0U_KcUG7q7wFyliG2RKsfHJjTsW1pMJY&shem=rimspwouoe,",
     "date": "8-12/08",
+    "contact": "סבסטיאן",
     "no_lift": false,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "020"
   },
   {
     "name": "שטיח",
