@@ -295,18 +295,19 @@
     "id": "021"
   },
   {
-    "id": "022",
-    "name": "ספה",
+    "name": "ספה (בת שנתיים!",
     "name_en": "",
     "cat": "סלון",
-    "desc": "",
     "price": 1800,
-    "foto": "",
+    "desc": "",
+    "foto": "https://raw.githubusercontent.com/sebiebram/venta-depto-fotos/main/sillon.jpg",
     "link": "share.google/bt4KrlQhYGsekyWM7",
     "date": "1-12/08",
+    "contact": "אופיר",
     "no_lift": true,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "022"
   },
   {
     "name": "מקרר",
