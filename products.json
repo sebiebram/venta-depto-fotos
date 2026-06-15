@@ -224,18 +224,19 @@
     "contact": "סבסטיאן"
   },
   {
-    "id": "017",
     "name": "שטיח",
     "name_en": "",
     "cat": "חדר ילדים",
-    "desc": "",
     "price": 200,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/alfombra.jpg",
-    "link": "https://kkids.co.il/product/%d7%a9%d7%98%d7%99%d7%97-%d7%90%d7%9f-%d7%95%d7%a8%d7%95%d7%93/?shem=rimspwouoe,",
+    "link": "https://share.google/01yWoc3FYmW9KhLpz",
     "date": "מיידי",
+    "contact": "סבסטיאן",
     "no_lift": false,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "017"
   },
   {
     "id": "018",
