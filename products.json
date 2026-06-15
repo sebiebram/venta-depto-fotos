@@ -308,17 +308,18 @@
     "contact": "סבסטיאן"
   },
   {
-    "id": "023",
     "name": "מקרר",
-    "name_en": "",
+    "name_en": "Fridge",
     "cat": "מטבח",
+    "price": 1000,
     "desc": "",
-    "price": 0,
-    "foto": "",
+    "foto": "https://raw.githubusercontent.com/sebiebram/venta-depto-fotos/main/fridge.jpg",
     "link": "",
     "date": "8-12/08",
+    "contact": "אופיר",
     "no_lift": true,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "023"
   }
 ]
