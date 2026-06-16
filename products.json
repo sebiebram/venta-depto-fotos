@@ -59,18 +59,19 @@
     "id": "004"
   },
   {
-    "id": "005",
     "name": "מדיח",
     "name_en": "",
     "cat": "מטבח",
-    "desc": "Bosch SMS43D08ME, 12 מנות, 84.5×60×60 ס\"מ",
     "price": 900,
+    "desc": "נרכש לפני כשנתיים ב 2200 שח נמכר באותו מחיר היום. מדיח מעולה במצב מצוין, אף פעם לא התקלקל. היום Bosch SMS43D08M 12 מנות, 84.5×60×60 ס\"מ",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/lavavajillas.jpg",
     "link": "https://www.digital-electric.co.il/items/5446277?shem=rimspwouoe,",
     "date": "8-12/09",
+    "contact": "אופיר",
     "no_lift": false,
     "sold": false,
-    "contact": "אופיר"
+    "hidden": false,
+    "id": "005"
   },
   {
     "id": "006",
