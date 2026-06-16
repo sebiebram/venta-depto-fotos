@@ -4,13 +4,14 @@
     "name_en": "Office Desk",
     "cat": "חדר עבודה",
     "price": 200,
-    "desc": "",
+    "desc": "נרכש בtake it לפני כ4 שנים, מצב מעולה",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/escritorio.jpg",
     "link": "",
     "date": "1-12/08",
     "contact": "אופיר",
     "no_lift": false,
     "sold": false,
+    "hidden": false,
     "id": "001"
   },
   {
