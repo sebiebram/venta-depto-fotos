@@ -190,18 +190,19 @@
     "id": "013"
   },
   {
-    "id": "014",
     "name": "כוורת",
     "name_en": "",
     "cat": "חדר ילדים",
-    "desc": "",
     "price": 100,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/juguetes.jpg",
     "link": "https://share.google/9XuJmpkeKKRG2CNQZ",
     "date": "8-12/08",
+    "contact": "סבסטיאן",
     "no_lift": false,
-    "sold": false,
-    "contact": "סבסטיאן"
+    "sold": true,
+    "hidden": false,
+    "id": "014"
   },
   {
     "id": "015",
