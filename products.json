@@ -118,18 +118,19 @@
     "id": "008"
   },
   {
-    "id": "009",
     "name": "מנורה",
     "name_en": "",
     "cat": "חדר הורים",
-    "desc": "",
     "price": 100,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/lampara.jpg",
     "link": "",
     "date": "8-12/08",
+    "contact": "אופיר",
     "no_lift": false,
-    "sold": false,
-    "contact": "אופיר"
+    "sold": true,
+    "hidden": false,
+    "id": "009"
   },
   {
     "id": "010",
