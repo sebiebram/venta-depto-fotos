@@ -54,7 +54,7 @@
     "date": "8-12/08",
     "contact": "אופיר",
     "no_lift": false,
-    "sold": false,
+    "sold": true,
     "hidden": false,
     "id": "004"
   },
