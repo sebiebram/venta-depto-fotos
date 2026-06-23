@@ -175,18 +175,19 @@
     "contact": "אופיר"
   },
   {
-    "id": "013",
     "name": "3 וילונות",
     "name_en": "",
     "cat": "סלון",
-    "desc": "",
     "price": 100,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/cortinas.jpg",
     "link": "",
     "date": "1-12/08",
+    "contact": "אופיר",
     "no_lift": false,
-    "sold": false,
-    "contact": "אופיר"
+    "sold": true,
+    "hidden": false,
+    "id": "013"
   },
   {
     "id": "014",
