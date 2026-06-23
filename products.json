@@ -88,18 +88,19 @@
     "contact": "אופיר"
   },
   {
-    "id": "007",
     "name": "מכונת כביסה",
     "name_en": "",
     "cat": "שירותים",
-    "desc": "7 kg 1000 סל״ד - wan20051IL",
     "price": 600,
+    "desc": "7 kg 1000 סל״ד - wan20051IL",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/lavarropas.jpg",
     "link": "",
     "date": "8-12/08",
+    "contact": "אופיר",
     "no_lift": false,
-    "sold": false,
-    "contact": "אופיר"
+    "sold": true,
+    "hidden": false,
+    "id": "007"
   },
   {
     "id": "008",
