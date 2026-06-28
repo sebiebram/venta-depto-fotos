@@ -30,18 +30,19 @@
     "id": "002"
   },
   {
-    "id": "003",
     "name": "מסך למחשב",
     "name_en": "",
     "cat": "חדר עבודה",
-    "desc": "Dell SE2225HM, 22\", FHD, VA",
     "price": 100,
+    "desc": "Dell SE2225HM, 22\", FHD, VA",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/pantalla.jpg",
     "link": "https://ksp.co.il/web/item/401762?utm_source=google&utm_campaign=shopping_campaign&utm_medium=cpc&appkey=1006&gad_source=1&gad_campaignid=15032250386&gbraid=0AAAAAD2DLMoINcki2PtoHwzU4iZ8myVW3&gclid=Cj0KCQjw54nRBhDCARIsAMcY_SBh-0N7o12Qj01johfi1CJEFvv2Gh_OJO1pmb3vuGBB_Dr8tzcdZyIaAoybEALw_wcB",
     "date": "מיידי",
+    "contact": "אופיר",
     "no_lift": false,
-    "sold": false,
-    "contact": "אופיר"
+    "sold": true,
+    "hidden": false,
+    "id": "003"
   },
   {
     "name": "טלויזיה חכמה",
