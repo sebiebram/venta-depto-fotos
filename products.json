@@ -205,18 +205,19 @@
     "id": "014"
   },
   {
-    "id": "015",
-    "name": "מזרן",
+    "name": "מזרן זוגי",
     "name_en": "",
     "cat": "חדר הורים",
-    "desc": "",
     "price": 550,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/colchon-cama.jpg",
     "link": "",
     "date": "8-12/08",
+    "contact": "סבסטיאן",
     "no_lift": true,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "015"
   },
   {
     "id": "016",
