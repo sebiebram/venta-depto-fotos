@@ -248,18 +248,19 @@
     "id": "017"
   },
   {
-    "id": "018",
-    "name": "שידה",
+    "name": "שידת החתלה",
     "name_en": "",
     "cat": "חדר ילדים",
-    "desc": "",
     "price": 1000,
+    "desc": "",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/shida-.jpg",
     "link": "https://www.mamo-israel.co.il/items/5364894?adscale=1&utm_campaign=PMax_IL%20%5BPMax%20%20%5B%D7%9E%D7%95%D7%93%D7%A2%D7%AA%20%D7%A9%D7%95%D7%A4%D7%99%D7%A0%D7%92%20%D7%9C%D7%9E%D7%95%D7%A6%D7%A8%D7%99%D7%9D%20%D7%A0%D7%9E%D7%9B%D7%A8%D7%99%D7%9D%20%D7%91%D7%99%D7%95%D7%AA%D7%A8%5D%5D&utm_id=19784173591&utm_medium=paid%20shopping&device=m&creativeId=&network=x&utm_source=google&site_source_name=adscale_pmax&gad_source=1&gad_campaignid=19783552214&gbraid=0AAAAACXknGaimMf6V0GLD1N4Y49rMJJNW&gclid=Cj0KCQjw54nRBhDCARIsAMcY_SDiregqX0ZxQp0ijbu23RpKhSs3KSNkB7bLdzZV6AEE6xGqzwgeAXkaAvZLEALw_wcB&shem=rimspwouoe,",
     "date": "8-12/08",
+    "contact": "סבסטיאן",
     "no_lift": false,
     "sold": false,
-    "contact": "סבסטיאן"
+    "hidden": false,
+    "id": "018"
   },
   {
     "id": "019",
