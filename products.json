@@ -61,6 +61,8 @@
     "no_lift": false,
     "sold": true,
     "hidden": false,
+    "buyer": "לינוי",
+    "paid": 650,
     "id": "004"
   },
   {
