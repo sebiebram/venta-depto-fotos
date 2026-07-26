@@ -12,6 +12,8 @@
     "no_lift": false,
     "sold": true,
     "hidden": false,
+    "buyer": "יסמין מרקטפלייס",
+    "paid": 0,
     "id": "001"
   },
   {
