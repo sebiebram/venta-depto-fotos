@@ -360,7 +360,7 @@
       </div>
       <div class="form-row" style="margin-bottom:0">
         <label>מחיר (₪) *</label>
-        <input type="number" id="f-price" placeholder="500" min="0" dir="ltr">
+        <input type="number" id="f-price" placeholder="500" min="0" dir="ltr" oninput="updateRemaining()">
       </div>
     </div>
 
@@ -409,6 +409,28 @@
       <div class="checkbox-row">
         <input type="checkbox" id="f-hidden">
         <label for="f-hidden" style="color:#888;">מוסתר — לא מופיע בדף הציבורי</label>
+      </div>
+    </div>
+
+    <!-- Payment section -->
+    <div style="margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid var(--border);">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em;">תשלום</div>
+      <div class="form-row">
+        <label>שם הקונה</label>
+        <input type="text" id="f-buyer" placeholder="דנה כהן">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row" style="margin-bottom:0">
+          <label>שולם (₪)</label>
+          <input type="number" id="f-paid" placeholder="0" min="0" dir="ltr"
+            oninput="updateRemaining()">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <label>נשאר לתשלום</label>
+          <div id="f-remaining" style="
+            padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;
+            font-size:14px;font-weight:600;background:var(--bg);color:var(--text);">—</div>
+        </div>
       </div>
     </div>
 
@@ -566,6 +588,21 @@ function setStatus(type, msg) {
 }
 
 // ══════════════════════════════════════════════════════════════════
+//  PAYMENT BADGE
+// ══════════════════════════════════════════════════════════════════
+function paymentBadge(p) {
+  const price = parseFloat(p.price) || 0;
+  const paid  = parseFloat(p.paid)  || 0;
+  if (!price || !p.sold) return '';
+  if (paid >= price) return '<span style="font-size:11px;color:var(--green-dark);font-weight:600;">✓ שולם</span>';
+  if (paid > 0) {
+    const rem = price - paid;
+    return `<span style="font-size:11px;color:var(--warn);font-weight:500;">נשאר ₪${rem.toLocaleString()}</span>`;
+  }
+  return '<span style="font-size:11px;color:var(--red);font-weight:500;">לא שולם</span>';
+}
+
+// ══════════════════════════════════════════════════════════════════
 //  RENDER LIST
 // ══════════════════════════════════════════════════════════════════
 function renderList() {
@@ -594,8 +631,8 @@ function renderList() {
         ${thumb}
         <div class="product-info">
           <div class="name">${p.name}${p.sold ? ' <span class="sold-badge">נמכר</span>' : ''}${p.hidden ? ' <span class="sold-badge" style="background:#aaa;">מוסתר</span>' : ''}</div>
-          <div class="meta">${p.cat || '—'} · ${p.contact === 'אופיר' ? 'אופיר' : 'סבי'}</div>
-          <div class="price">${price}</div>
+          <div class="meta">${p.cat || '—'} · ${p.contact === 'אופיר' ? 'אופיר' : 'סבי'}${p.buyer ? ' · ' + p.buyer : ''}</div>
+          <div class="price">${price} ${paymentBadge(p)}</div>
         </div>
         <div class="product-actions">
           <button class="btn btn-secondary btn-sm" onclick="toggleSold(${i})" title="${p.sold ? 'סמן כזמין' : 'סמן כנמכר'}">
@@ -607,6 +644,24 @@ function renderList() {
         </div>
       </div>`;
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  PAYMENT
+// ══════════════════════════════════════════════════════════════════
+function updateRemaining() {
+  const price = parseFloat(document.getElementById('f-price').value) || 0;
+  const paid  = parseFloat(document.getElementById('f-paid').value)  || 0;
+  const el    = document.getElementById('f-remaining');
+  if (!price) { el.textContent = '—'; el.style.color = 'var(--muted)'; return; }
+  const rem = price - paid;
+  if (rem <= 0) {
+    el.textContent = '✓ שולם הכל';
+    el.style.color = 'var(--green-dark)';
+  } else {
+    el.textContent = '₪' + rem.toLocaleString();
+    el.style.color = rem < price ? 'var(--warn)' : 'var(--text)';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -639,6 +694,9 @@ function openModal(idx) {
   document.getElementById('f-no-lift').checked  = !!p.no_lift;
   document.getElementById('f-sold').checked     = !!p.sold;
   document.getElementById('f-hidden').checked   = !!p.hidden;
+  document.getElementById('f-buyer').value      = p.buyer || '';
+  document.getElementById('f-paid').value       = p.paid != null ? p.paid : '';
+  updateRemaining();
 
   updateFotoPreview();
   document.getElementById('modal').classList.add('open');
@@ -682,6 +740,8 @@ async function saveProduct() {
     no_lift: document.getElementById('f-no-lift').checked,
     sold:    document.getElementById('f-sold').checked,
     hidden:  document.getElementById('f-hidden').checked,
+    buyer:   document.getElementById('f-buyer').value.trim(),
+    paid:    parseFloat(document.getElementById('f-paid').value) || 0,
     id:      editIdx === -1 ? (products.length + 1).toString().padStart(3, '0') : (products[editIdx].id || ''),
   };
 
