@@ -20,7 +20,7 @@
     "name": "פינת אוכל + 6 כסאות",
     "name_en": "",
     "cat": "מטבח",
-    "price": 1000,
+    "price": 850,
     "desc": "IKEA NORDMYRA, לבן, 150×85×73 ס\"מ פינת אוכל של איקאה במצב מעולה",
     "foto": "https://github.com/sebiebram/venta-depto-fotos/raw/refs/heads/main/mesa.jpg",
     "link": "https://www.ikea.cn/cn/en/p/nordmyra-table-white-birch-veneer-40392614/",
@@ -29,6 +29,8 @@
     "no_lift": false,
     "sold": true,
     "hidden": false,
+    "buyer": "פז פייסבוק",
+    "paid": 0,
     "id": "002"
   },
   {
