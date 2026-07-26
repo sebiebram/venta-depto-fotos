@@ -308,6 +308,8 @@
     "no_lift": false,
     "sold": true,
     "hidden": false,
+    "buyer": "פייסבוק",
+    "paid": 200,
     "id": "021"
   },
   {
